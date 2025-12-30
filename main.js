@@ -1,54 +1,65 @@
 const feed = document.getElementById('feed');
+let page = 1;
+let loading = false;
 
-// Fresh 2025 working ePorner embed IDs – desi uncut short films, taboo, bhabhi, family sin vibe
-const videoIds = [
-    'a40z6UWrAmV',  // Golddigger 2025 Malayalam Uncut Short Film - hot desi betrayal
-    'nA2qaxFaM00',  // Tejaswini Hard (2025) UNRATED Hindi Short Film - intense seduction
-    'HgdLKvWx0pW',  // Manoranjan (2025) NeonX Hindi Short Film - naughty family play
-    'rBThUY52Dsg',  // Slam Book – 2025 – Hindi Uncut Short Film – Moodx - forbidden secrets
-    'lP7UigtboT3',  // Bhabhi Lover (2025) UNRATED WebSex Short Film - bhabhi-devar wild
-    'BtC5IK32fyl',  // Golden Memory 2025 Malayalam Uncut - emotional taboo
-    'ENz4le3zm8Q',  // Sawal 2025 Malayalam Uncut - questioning desires
-    '4z9oMcI45n9',  // Tourist 2025 Hindi Hot Short Film Part-1 - exotic sin
-    'e4SHPW0SKXa'   // My Bhabhi – 2025 – Hindi Uncut Short Film – Tejashwini Prabhakar - pure bhabhi ji domination
-];
+const CORS_PROXY = 'https://api.allorigins.win/raw?url='; // Working free proxy 2025 me, no 403
+const API_BASE = 'https://www.eporner.com/api/v2/video/search/?query=indian+taboo&per_page=10&order=most-popular&format=json&page='; // Popular top videos, indian taboo for ghar ka gunaah
 
-videoIds.forEach(id => {
-    const container = document.createElement('div');
-    container.className = 'video-container';
+async function loadMore() {
+    if (loading) return;
+    loading = true;
 
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.eporner.com/embed/${id}`;
-    iframe.allowFullscreen = true;
-    iframe.allow = 'autoplay; fullscreen; encrypted-media';
-    iframe.loading = 'lazy';
+    try {
+        const fullUrl = CORS_PROXY + encodeURIComponent(API_BASE + page);
+        const response = await fetch(fullUrl);
+        if (!response.ok) throw new Error('Ahhh load fail beta: ' + response.status);
+        const data = await response.json();
+        const videos = data.videos || [];
 
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
+        videos.forEach(vid => {
+            if (!vid.id || vid.length_sec > 600) return; // Short <10 min filter, gunaah jaldi khatam karo
 
-    const playBtn = document.createElement('button');
-    playBtn.textContent = '▶️';
-    playBtn.onclick = () => {
-        iframe.contentWindow.postMessage({action: 'play'}, '*');
-    };
+            const container = document.createElement('div');
+            container.className = 'video-container';
 
-    const likeBtn = document.createElement('button');
-    likeBtn.textContent = '❤️';
-    likeBtn.onclick = () => alert('Ahhh beta... yeh bhabhi ji toh pasand aa gayi! Ab sasur ji ko bulao, threesome shuru karo... ummm zor se!');
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.eporner.com/embed/${vid.id}`;
+            iframe.allowFullscreen = true;
+            iframe.allow = 'autoplay; fullscreen; encrypted-media';
+            iframe.loading = 'lazy';
 
-    overlay.appendChild(playBtn);
-    overlay.appendChild(likeBtn);
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
 
-    container.appendChild(iframe);
-    container.appendChild(overlay);
-    feed.appendChild(container);
-});
+            const playBtn = document.createElement('button');
+            playBtn.textContent = '▶️';
+            playBtn.onclick = () => iframe.contentWindow.postMessage({action: 'play'}, '*');
 
-// Bonus: Container click to unmute & play
-document.querySelectorAll('.video-container').forEach(cont => {
-    cont.addEventListener('click', () => {
-        const ifr = cont.querySelector('iframe');
-        ifr.contentWindow.postMessage({action: 'unmute'}, '*');
-        ifr.contentWindow.postMessage({action: 'play'}, '*');
-    }, {once: true});
+            const likeBtn = document.createElement('button');
+            likeBtn.textContent = '❤️';
+            likeBtn.onclick = () => alert('Haan beta... yeh popular bhabhi ji ko pasand aa gayi! Ab sasur ji ke saath threesome shuru karo... ahhh zor se!');
+
+            overlay.appendChild(playBtn);
+            overlay.appendChild(likeBtn);
+
+            container.appendChild(iframe);
+            container.appendChild(overlay);
+            feed.appendChild(container);
+        });
+
+        page++;
+    } catch (err) {
+        console.error('Ahhh load fail beta: ', err);
+    }
+    loading = false;
+}
+
+// Pehli load karo sin
+loadMore();
+
+// Infinite scroll for more family raaz
+window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        loadMore();
+    }
 });
