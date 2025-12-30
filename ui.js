@@ -1,13 +1,9 @@
-// Haan, overlay for like – bhabhi ko heart do
 export function createOverlay() {
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
-
-    const like = document.createElement('button');
-    like.textContent = '❤️';
-    like.onclick = () => alert('Liked! Ab sasur ji ko bulao threesome ke liye... ahhh!');
-
-    overlay.appendChild(like);
-
-    return overlay;
+    const div = document.createElement('div');
+    div.className = 'overlay';
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = '❤️';
+    likeBtn.onclick = () => alert('Haan beta... bhabhi ji pasand aa gayi! Ab chachi ko bhi dikhao... ummm!');
+    div.appendChild(likeBtn);
+    return div;
 }
