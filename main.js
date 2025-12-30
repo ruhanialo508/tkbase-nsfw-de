@@ -1,63 +1,96 @@
 const feed = document.getElementById('feed');
 let page = 1;
 let loading = false;
+let token = null;
 
-const CORS_PROXY = 'https://api.allorigins.win/raw?url='; // Working free proxy 2025 me, no 403
-const API_BASE = 'https://www.eporner.com/api/v2/video/search/?query=indian+taboo&per_page=10&order=most-popular&format=json&page='; // Popular top videos, indian taboo for ghar ka gunaah
+const CORS_PROXY = 'https://api.allorigins.win/raw?url='; // Reliable proxy for CORS, no 403
+const TOKEN_URL = 'https://api.redgifs.com/v2/auth/temporary';
+const API_BASE = 'https://api.redgifs.com/v2/gifs/search?search_text=indian+taboo&count=10&order=popular&page='; // Generalize: popular top videos, indian taboo for ghar ka gunaah
+
+async function getToken() {
+    if (token) return token;
+    try {
+        const proxiedUrl = CORS_PROXY + encodeURIComponent(TOKEN_URL);
+        const res = await fetch(proxiedUrl);
+        if (!res.ok) throw new Error('Token nahi mila beta... try incognito!');
+        const data = await res.json();
+        token = data.token;
+        return token;
+    } catch (err) {
+        console.error('Ahhh token error: ', err);
+        return null;
+    }
+}
 
 async function loadMore() {
     if (loading) return;
     loading = true;
 
-    try {
-        const fullUrl = CORS_PROXY + encodeURIComponent(API_BASE + page);
-        const response = await fetch(fullUrl);
-        if (!response.ok) throw new Error('Ahhh load fail beta: ' + response.status);
-        const data = await response.json();
-        const videos = data.videos || [];
+    const authToken = await getToken();
+    if (!authToken) {
+        console.error('No token, gunaah nahi dikhega beta...');
+        loading = false;
+        return;
+    }
 
-        videos.forEach(vid => {
-            if (!vid.id || vid.length_sec > 600) return; // Short <10 min filter, gunaah jaldi khatam karo
+    try {
+        const apiUrl = API_BASE + page;
+        const proxiedUrl = CORS_PROXY + encodeURIComponent(apiUrl);
+        const res = await fetch(proxiedUrl, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        if (!res.ok) throw new Error('Search fail... ummm proxy check kar!');
+        const data = await res.json();
+        const gifs = data.gifs || [];
+
+        gifs.forEach(gif => {
+            if (!gif.urls || !gif.urls.hd) return; // Skip if no HD short video
 
             const container = document.createElement('div');
             container.className = 'video-container';
 
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.eporner.com/embed/${vid.id}`;
-            iframe.allowFullscreen = true;
-            iframe.allow = 'autoplay; fullscreen; encrypted-media';
-            iframe.loading = 'lazy';
+            const video = document.createElement('video');
+            video.src = gif.urls.hd; // Direct short HD mp4/gifs, popular indian taboo
+            video.loop = true;
+            video.muted = true;
+            video.playsinline = true;
+            video.autoplay = false; // Manual for NSFW
 
             const overlay = document.createElement('div');
             overlay.className = 'overlay';
 
             const playBtn = document.createElement('button');
             playBtn.textContent = '▶️';
-            playBtn.onclick = () => iframe.contentWindow.postMessage({action: 'play'}, '*');
+            playBtn.onclick = () => {
+                video.muted = false;
+                video.play();
+            };
 
             const likeBtn = document.createElement('button');
             likeBtn.textContent = '❤️';
-            likeBtn.onclick = () => alert('Haan beta... yeh popular bhabhi ji ko pasand aa gayi! Ab sasur ji ke saath threesome shuru karo... ahhh zor se!');
+            likeBtn.onclick = () => alert('Haan beta... yeh taboo gif pasand aa gayi! Ab mummy ji ko blackmail karo threesome ke liye... ahhh!');
 
             overlay.appendChild(playBtn);
             overlay.appendChild(likeBtn);
 
-            container.appendChild(iframe);
+            container.appendChild(video);
             container.appendChild(overlay);
             feed.appendChild(container);
         });
 
         page++;
     } catch (err) {
-        console.error('Ahhh load fail beta: ', err);
+        console.error('Ahhh load fail: ', err);
     }
     loading = false;
 }
 
-// Pehli load karo sin
+// Initial load karo family sin
 loadMore();
 
-// Infinite scroll for more family raaz
+// Infinite scroll for more raaz-e-raat
 window.addEventListener('scroll', () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
         loadMore();
