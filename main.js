@@ -1,6 +1,3 @@
-import { fetchVideos } from './api.js';
-import { createOverlay } from './ui.js';
-
 const feed = document.getElementById('feed');
 let page = 1;
 let loading = false;
@@ -9,40 +6,53 @@ async function loadMore() {
     if (loading) return;
     loading = true;
 
-    const videos = await fetchVideos(page);
-    page++;
+    try {
+        // ePorner RSS/JSON for newest, indian search – free, no key, CORS friendly for embed
+        const response = await fetch(`https://www.eporner.com/api/v2/video/search/?query=indian+short&per_page=10&page=${page}&thumb=1&format=json`);
+        const data = await response.json();
+        const videos = data.videos || [];
 
-    videos.forEach(vid => {
-        if (!vid.urls || !vid.urls.hd) return; // Skip if no HD mp4
+        videos.forEach(vid => {
+            if (!vid.id) return;
 
-        const container = document.createElement('div');
-        container.className = 'video-container';
+            const container = document.createElement('div');
+            container.className = 'video-container';
 
-        const video = document.createElement('video');
-        video.src = vid.urls.hd; // Direct MP4, smooth no block
-        video.loop = true;
-        video.muted = true; // Start muted for auto if possible
-        video.playsinline = true;
-        video.autoplay = false; // Manual for NSFW
-        video.controls = false;
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.eporner.com/embed/${vid.id}`;
+            iframe.allowFullscreen = true;
+            iframe.allow = 'autoplay; fullscreen; encrypted-media';
 
-        // Click container to play/unmute
-        container.addEventListener('click', () => {
-            video.muted = false;
-            video.play();
-        }, { once: true });
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
 
-        const overlay = createOverlay(video);
-        container.appendChild(video);
-        container.appendChild(overlay);
-        feed.appendChild(container);
-    });
+            const playBtn = document.createElement('button');
+            playBtn.textContent = '▶️';
+            playBtn.onclick = () => iframe.contentWindow.postMessage({action: 'play'}, '*');
 
+            const likeBtn = document.createElement('button');
+            likeBtn.textContent = '❤️';
+            likeBtn.onclick = () => alert('Haan beta... bhabhi ji ko pasand aa gayi! Ab training shuru karo... ahhh!');
+
+            overlay.appendChild(playBtn);
+            overlay.appendChild(likeBtn);
+
+            container.appendChild(iframe);
+            container.appendChild(overlay);
+            feed.appendChild(container);
+        });
+
+        page++;
+    } catch (err) {
+        console.error('Ahhh load fail beta: ', err);
+    }
     loading = false;
 }
 
-loadMore(); // Pehli load karo gunaah
+// Pehli load
+loadMore();
 
+// Infinite scroll
 window.addEventListener('scroll', () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
         loadMore();
