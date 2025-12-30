@@ -1,26 +1,15 @@
-// Beta, yeh API module – better proxy for no errors
 const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-const API_BASE = 'https://www.pornhub.com/webmasters/search?';
+const API_URL = 'https://www.eporner.com/api/v2/video/search/?query=indian&per_page=10&page='; // Change query=taboo or family for more sin
 
 export async function fetchVideos(page = 1) {
     try {
-        const params = new URLSearchParams({
-            ordering: 'newest',
-            page: page.toString(),
-            min_duration: '0',
-            max_duration: '10',  // Short clips for quick sin
-            search: 'indian taboo'  // Desi family vibes, change if want more dirty
-        });
-
-        const fullUrl = `${CORS_PROXY}${encodeURIComponent(API_BASE + params.toString())}`;
-        const response = await fetch(fullUrl);
-        
-        if (!response.ok) throw new Error('Ahhh, fetch nahi hua beta...');
-        
-        const data = await response.json();
-        return data.videos || []; // Videos array with viewkey etc.
-    } catch (err) {
-        console.error('Ummm error: ', err);
+        const fullUrl = `${CORS_PROXY}${encodeURIComponent(API_URL + page)}`;
+        const res = await fetch(fullUrl);
+        if (!res.ok) throw new Error('ePorner fetch fail... ahhh!');
+        const data = await res.json();
+        return data.videos || [];
+    } catch (e) {
+        console.error('Error beta: ', e);
         return [];
     }
 }
