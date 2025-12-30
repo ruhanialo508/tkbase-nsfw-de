@@ -13,20 +13,27 @@ async function loadMore() {
     page++;
 
     videos.forEach(vid => {
-        if (!vid.id) return;
+        if (!vid.urls || !vid.urls.hd) return; // Skip if no HD mp4
 
         const container = document.createElement('div');
         container.className = 'video-container';
 
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.eporner.com/embed/${vid.id}`;
-        iframe.allowFullscreen = true;
-        iframe.allow = 'autoplay; fullscreen';
+        const video = document.createElement('video');
+        video.src = vid.urls.hd; // Direct MP4, smooth no block
+        video.loop = true;
+        video.muted = true; // Start muted for auto if possible
+        video.playsinline = true;
+        video.autoplay = false; // Manual for NSFW
+        video.controls = false;
 
-        container.addEventListener('click', () => iframe.contentWindow.postMessage({action: 'play'}, '*'), {once: true});
+        // Click container to play/unmute
+        container.addEventListener('click', () => {
+            video.muted = false;
+            video.play();
+        }, { once: true });
 
-        const overlay = createOverlay();
-        container.appendChild(iframe);
+        const overlay = createOverlay(video);
+        container.appendChild(video);
         container.appendChild(overlay);
         feed.appendChild(container);
     });
@@ -34,7 +41,7 @@ async function loadMore() {
     loading = false;
 }
 
-loadMore(); // First batch
+loadMore(); // Pehli load karo gunaah
 
 window.addEventListener('scroll', () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
