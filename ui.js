@@ -1,24 +1,12 @@
-// Ummm, har video pe yeh naughty overlay
-export function createOverlay(videoEl) {
+// Haan, overlay for like – bhabhi ko heart do
+export function createOverlay() {
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
 
-    const play = document.createElement('button');
-    play.textContent = '▶️';
-    play.onclick = () => {
-        videoEl.play();
-        play.textContent = '⏸️';
-        play.onclick = () => {
-            videoEl.pause();
-            play.textContent = '▶️';
-        };
-    };
-
     const like = document.createElement('button');
     like.textContent = '❤️';
-    like.onclick = () => alert('Haan beta... bhabhi ji ko pasand aa gayi! Ab training shuru?');
+    like.onclick = () => alert('Liked! Ab sasur ji ko bulao threesome ke liye... ahhh!');
 
-    overlay.appendChild(play);
     overlay.appendChild(like);
 
     return overlay;
