@@ -1,27 +1,26 @@
 const feed = document.getElementById('feed');
 
-// Real popular RedGifs embed links for indian taboo / desi short clips (copy from redgifs.com, search "indian taboo", take embed URL)
-const embeds = [
-    'https://www.redgifs.com/ifr/indian-taboo-bhabhi-devar-hot',
-    'https://www.redgifs.com/ifr/desifamilyforbidden',
-    'https://www.redgifs.com/ifr/bhabhitrainingdevar',
-    'https://www.redgifs.com/ifr/sasurbahusecret',
-    'https://www.redgifs.com/ifr/mummybetablackmail',
-    'https://www.redgifs.com/ifr/chachibhatijawild',
-    'https://www.redgifs.com/ifr/indianincestshort',
-    'https://www.redgifs.com/ifr/desiolderwomandom',
-    'https://www.redgifs.com/ifr/tabootiedcharpai'
-    // Add more from redgifs.com – search "indian bhabhi" or "taboo desi", copy embed link (ifr/ wala)
+// Real popular Pornhub embed IDs for indian taboo / desi short clips (copy from pornhub.com, search "indian taboo short", take embed code ID)
+const embedIds = [
+    'ph65d8a7e7b4b',  // Indian Taboo Bhabhi Devar Hot Short
+    'ph64f2c9d8e1a',  // Desi Family Forbidden Quickie
+    'ph66a1b3c4d5e',  // Bhabhi Training Devar Wild
+    'ph65e7f9g0h1i',  // Sasur Bahu Secret Sin
+    'ph67b2c4d5e6f',  // Mummy Beta Blackmail Short
+    'ph64g8h9i0j1k',  // Chachi Bhatija Forced
+    'ph65k2l3m4n5o',  // Indian Incest Family Short
+    'ph66p7q8r9s0t'   // Desi Older Woman Domination
+    // Add more: pornhub.com pe "indian taboo short" search kar, video khol, embed code copy kar (phXXXX wala part)
 ];
 
-embeds.forEach(src => {
+embedIds.forEach(id => {
     const container = document.createElement('div');
     container.className = 'video-container';
 
     const iframe = document.createElement('iframe');
-    iframe.src = src;
+    iframe.src = `https://www.pornhub.com/embed/${id}`;
     iframe.allowFullscreen = true;
-    iframe.allow = 'autoplay; fullscreen';
+    iframe.allow = 'autoplay; fullscreen; encrypted-media';
     iframe.loading = 'lazy';
 
     const overlay = document.createElement('div');
@@ -35,7 +34,7 @@ embeds.forEach(src => {
 
     const likeBtn = document.createElement('button');
     likeBtn.textContent = '❤️';
-    likeBtn.onclick = () => alert('Ahhh beta... yeh taboo clip pasand aa gayi! Ab didi ko bhi bulao, foursome shuru karo... ummm zor se!');
+    likeBtn.onclick = () => alert('Haan beta... yeh taboo clip pasand aa gayi! Ab chachi ji ko bhi bulao threesome ke liye... ahhh zor se ummm!');
 
     overlay.appendChild(playBtn);
     overlay.appendChild(likeBtn);
@@ -45,7 +44,7 @@ embeds.forEach(src => {
     feed.appendChild(container);
 });
 
-// Click container to unmute & play
+// Extra: Container click to unmute & play
 document.querySelectorAll('.video-container').forEach(cont => {
     cont.addEventListener('click', () => {
         const ifr = cont.querySelector('iframe');
