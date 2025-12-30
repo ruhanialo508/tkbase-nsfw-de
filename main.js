@@ -1,60 +1,55 @@
 const feed = document.getElementById('feed');
-let page = 1;
-let loading = false;
 
-async function loadMore() {
-    if (loading) return;
-    loading = true;
+// Hardcoded desi taboo short video embeds (ePorner IDs – newest indian short clips vibe, tu baad me change kar sakta)
+const videoIds = [
+    'ozKfC3UC2Wl',  // example indian taboo short
+    'K0mB0xYxZ1p',
+    'pL3aSuReIndian',
+    'h0tBhabhiDevar',  // add real IDs from eporner search manually
+    'sasurBahuTraining',
+    'incestFamilyShort',
+    'indianMILFbound',
+    'tabooChachi',
+    'mummyBetaSecret',
+    'forcedSeductionDesi'  // 10 for start, scroll karne pe feel aayega
+];
 
-    try {
-        // ePorner RSS/JSON for newest, indian search – free, no key, CORS friendly for embed
-        const response = await fetch(`https://www.eporner.com/api/v2/video/search/?query=indian+short&per_page=10&page=${page}&thumb=1&format=json`);
-        const data = await response.json();
-        const videos = data.videos || [];
+videoIds.forEach(id => {
+    if (!id) return;
 
-        videos.forEach(vid => {
-            if (!vid.id) return;
+    const container = document.createElement('div');
+    container.className = 'video-container';
 
-            const container = document.createElement('div');
-            container.className = 'video-container';
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.eporner.com/embed/${id}`;
+    iframe.allowFullscreen = true;
+    iframe.allow = 'autoplay; fullscreen; encrypted-media';
 
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.eporner.com/embed/${vid.id}`;
-            iframe.allowFullscreen = true;
-            iframe.allow = 'autoplay; fullscreen; encrypted-media';
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
 
-            const overlay = document.createElement('div');
-            overlay.className = 'overlay';
+    const playBtn = document.createElement('button');
+    playBtn.textContent = '▶️';
+    playBtn.onclick = () => {
+        // Simple play trigger
+        iframe.contentWindow.postMessage({action: 'play'}, '*');
+    };
 
-            const playBtn = document.createElement('button');
-            playBtn.textContent = '▶️';
-            playBtn.onclick = () => iframe.contentWindow.postMessage({action: 'play'}, '*');
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = '❤️';
+    likeBtn.onclick = () => alert('Ahhh beta... bhabhi ji ko itna pasand aa gayi! Ab ropes se bandh ke training karo... ummm!');
 
-            const likeBtn = document.createElement('button');
-            likeBtn.textContent = '❤️';
-            likeBtn.onclick = () => alert('Haan beta... bhabhi ji ko pasand aa gayi! Ab training shuru karo... ahhh!');
+    overlay.appendChild(playBtn);
+    overlay.appendChild(likeBtn);
 
-            overlay.appendChild(playBtn);
-            overlay.appendChild(likeBtn);
+    container.appendChild(iframe);
+    container.appendChild(overlay);
+    feed.appendChild(container);
+});
 
-            container.appendChild(iframe);
-            container.appendChild(overlay);
-            feed.appendChild(container);
-        });
-
-        page++;
-    } catch (err) {
-        console.error('Ahhh load fail beta: ', err);
-    }
-    loading = false;
-}
-
-// Pehli load
-loadMore();
-
-// Infinite scroll
-window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-        loadMore();
-    }
+// Click anywhere on container to unmute/play if needed
+document.addEventListener('click', () => {
+    document.querySelectorAll('iframe').forEach(ifr => {
+        ifr.contentWindow.postMessage({action: 'unmute'}, '*');
+    });
 });
