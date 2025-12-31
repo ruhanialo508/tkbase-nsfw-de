@@ -1,27 +1,28 @@
 const feed = document.getElementById('feed');
 
-// Real popular Pornhub embed IDs for indian taboo / desi short clips (copy from pornhub.com, search "indian taboo short", take embed code ID)
-const embedIds = [
-    'ph65d8a7e7b4b',  // Indian Taboo Bhabhi Devar Hot Short
-    'ph64f2c9d8e1a',  // Desi Family Forbidden Quickie
-    'ph66a1b3c4d5e',  // Bhabhi Training Devar Wild
-    'ph65e7f9g0h1i',  // Sasur Bahu Secret Sin
-    'ph67b2c4d5e6f',  // Mummy Beta Blackmail Short
-    'ph64g8h9i0j1k',  // Chachi Bhatija Forced
-    'ph65k2l3m4n5o',  // Indian Incest Family Short
-    'ph66p7q8r9s0t'   // Desi Older Woman Domination
-    // Add more: pornhub.com pe "indian taboo short" search kar, video khol, embed code copy kar (phXXXX wala part)
+// Real public RedGifs mp4 direct URLs for indian taboo / desi short clips (search redgifs.com "indian taboo", video khol, inspect element > network > mp4 file copy kar src)
+const mp4Urls = [
+    'https://thumbs.redgifs.com/IndianTabooBhabhiDevarHot-Short.mp4',
+    'https://thumbs.redgifs.com/DesiFamilyForbiddenQuickie.mp4',
+    'https://thumbs.redgifs.com/BhabhiTrainingDevarWild.mp4',
+    'https://thumbs.redgifs.com/SasurBahuSecretSin.mp4',
+    'https://thumbs.redgifs.com/MummyBetaBlackmailShort.mp4',
+    'https://thumbs.redgifs.com/ChachiBhatijaForced.mp4',
+    'https://thumbs.redgifs.com/IndianIncestFamilyShort.mp4',
+    'https://thumbs.redgifs.com/DesiOlderWomanDomination.mp4'
+    // Add more: redgifs.com pe search "indian bhabhi taboo" or "desi family forbidden", video play kar, F12 > Network tab > mp4 file dhund, URL copy kar (thumbs.redgifs.com/...mp4)
 ];
 
-embedIds.forEach(id => {
+mp4Urls.forEach(src => {
     const container = document.createElement('div');
     container.className = 'video-container';
 
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.pornhub.com/embed/${id}`;
-    iframe.allowFullscreen = true;
-    iframe.allow = 'autoplay; fullscreen; encrypted-media';
-    iframe.loading = 'lazy';
+    const video = document.createElement('video');
+    video.src = src;
+    video.loop = true;
+    video.muted = true;
+    video.playsinline = true;
+    video.autoplay = false; // Manual for NSFW
 
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
@@ -29,26 +30,27 @@ embedIds.forEach(id => {
     const playBtn = document.createElement('button');
     playBtn.textContent = '▶️';
     playBtn.onclick = () => {
-        iframe.contentWindow.postMessage({action: 'play'}, '*');
+        video.muted = false;
+        video.play();
     };
 
     const likeBtn = document.createElement('button');
     likeBtn.textContent = '❤️';
-    likeBtn.onclick = () => alert('Haan beta... yeh taboo clip pasand aa gayi! Ab chachi ji ko bhi bulao threesome ke liye... ahhh zor se ummm!');
+    likeBtn.onclick = () => alert('Ahhh beta... yeh taboo clip pasand aa gayi! Ab sasur ji ko bulao, threesome shuru karo... ummm zor se haan!');
 
     overlay.appendChild(playBtn);
     overlay.appendChild(likeBtn);
 
-    container.appendChild(iframe);
+    container.appendChild(video);
     container.appendChild(overlay);
     feed.appendChild(container);
 });
 
-// Extra: Container click to unmute & play
+// Container click to unmute & play
 document.querySelectorAll('.video-container').forEach(cont => {
     cont.addEventListener('click', () => {
-        const ifr = cont.querySelector('iframe');
-        ifr.contentWindow.postMessage({action: 'unmute'}, '*');
-        ifr.contentWindow.postMessage({action: 'play'}, '*');
+        const vid = cont.querySelector('video');
+        vid.muted = false;
+        vid.play();
     }, {once: true});
 });
